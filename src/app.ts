@@ -70,10 +70,10 @@ const getTask = async (): Promise<PostMessageParam[]> => {
 
 const postMessage = async (messages: PostMessageParam[]): Promise<void> => {
   const app = new App({ signingSecret: credentials.signingSecret, token: credentials.botToken })
-  let messageText = `<@${settings.userId}> タスクは全て終了しました :tada:`
+  let messageText = `<@${settings.userId}> All tasks completed :tada:`
   if (messages.length > 0) {
     messageText =
-      `<@${settings.userId}> タスクリスト\n\n` +
+      `<@${settings.userId}> task list\n\n` +
       messages
         .map(
           (message) =>
@@ -88,7 +88,7 @@ const postMessage = async (messages: PostMessageParam[]): Promise<void> => {
     channel: settings.reportChannel,
     text: messageText,
     as_user: true,
-    username: 'タスク通知bot',
+    username: 'task alert bot',
   })
 }
 
