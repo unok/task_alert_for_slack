@@ -21,6 +21,7 @@ const settings: {
   reportChannel: process.env.REPORT_CHANNEL,
 }
 
+const searchResultMaxCount = 200
 type MessageId = { channelId: string; timestamp: string }
 type PostMessageParam = { permalink: string; text: string; channel: string }
 const getTask = async (): Promise<PostMessageParam[]> => {
@@ -31,7 +32,7 @@ const getTask = async (): Promise<PostMessageParam[]> => {
     query: 'has::' + settings.taskReaction + ':',
     sort: 'timestamp',
     sort_dir: 'desc',
-    count: 200,
+    count: searchResultMaxCount,
   })
 
   const hasDoneTask: MessageId[] = []
@@ -41,7 +42,7 @@ const getTask = async (): Promise<PostMessageParam[]> => {
       query: 'has::' + settings.taskReaction + ': hasmy::' + doneReaction + ':',
       sort: 'timestamp',
       sort_dir: 'desc',
-      count: 200,
+      count: searchResultMaxCount,
     })
     doneTasks.messages.matches.forEach((message) => {
       hasDoneTask.push({ channelId: message.channel.id, timestamp: message.ts })
@@ -68,6 +69,8 @@ const getTask = async (): Promise<PostMessageParam[]> => {
   return doingTaskMessages
 }
 
+const contextMaxLength = 60
+
 const postMessage = async (messages: PostMessageParam[]): Promise<void> => {
   const app = new App({ signingSecret: credentials.signingSecret, token: credentials.botToken })
   let messageText = `<@${settings.userId}> All tasks completed :tada:`
@@ -78,7 +81,7 @@ const postMessage = async (messages: PostMessageParam[]): Promise<void> => {
         .map(
           (message) =>
             `* #${message.channel} <${message.permalink}|${message.text
-              .slice(0, 60)
+              .slice(0, contextMaxLength)
               .replace(/\r?\n/gm, ' ')}>`
         )
         .join(`\n`)
