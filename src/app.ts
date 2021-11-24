@@ -81,8 +81,12 @@ const postMessage = async (messages: PostMessageParam[]): Promise<void> => {
         .map(
           (message) =>
             `* #${message.channel} <${message.permalink}|${message.text
+              .replace(/\r?\n/gm, ' ')
+              .replace(/<https?:\/\/([^>]*)>/g, '$1')
               .slice(0, contextMaxLength)
-              .replace(/\r?\n/gm, ' ')}>`
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              }>`
         )
         .join(`\n`)
   }
